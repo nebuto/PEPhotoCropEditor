@@ -13,6 +13,7 @@
 
 @property (nonatomic) PECropView *cropView;
 @property (nonatomic) UIActionSheet *actionSheet;
+@property (nonatomic) BOOL toggleSquareConstrain;
 
 @end
 
@@ -66,15 +67,20 @@ static inline NSString *PELocalizedString(NSString *key, NSString *comment)
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                                                        target:nil
                                                                                        action:nil];
-        UIBarButtonItem *constrainButton = [[UIBarButtonItem alloc] initWithTitle:PELocalizedString(@"Constrain", nil)
+        UIBarButtonItem *squareButton = [[UIBarButtonItem alloc] initWithTitle:PELocalizedString(@"Toggle square constrain", nil)
                                                                             style:UIBarButtonItemStyleBordered
                                                                            target:self
-                                                                           action:@selector(constrain:)];
-        self.toolbarItems = @[flexibleSpace, constrainButton, flexibleSpace];
+                                                                           action:@selector(toggleSquare:)];
+        UIBarButtonItem *resetButton = [[UIBarButtonItem alloc] initWithTitle:@"Reset"
+                                                                        style:UIBarButtonItemStyleBordered
+                                                                       target:self
+                                                                       action:@selector(resetCropRectAnimated)];
+        self.toolbarItems = @[resetButton, flexibleSpace, squareButton];
     }
     self.navigationController.toolbarHidden = self.toolbarHidden;
     
     self.cropView.image = self.image;
+    self.toggleSquareConstrain = NO;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -147,6 +153,11 @@ static inline NSString *PELocalizedString(NSString *key, NSString *comment)
     [self.cropView resetCropRect];
 }
 
+- (void)resetCropRectAnimated
+{
+    [self resetCropRectAnimated:YES];
+}
+
 - (void)resetCropRectAnimated:(BOOL)animated
 {
     [self.cropView resetCropRectAnimated:animated];
@@ -166,6 +177,18 @@ static inline NSString *PELocalizedString(NSString *key, NSString *comment)
     if ([self.delegate respondsToSelector:@selector(cropViewController:didFinishCroppingImage:)]) {
         [self.delegate cropViewController:self didFinishCroppingImage:self.cropView.croppedImage];
     }
+}
+
+- (void)toggleSquare:(id)sender
+{
+    if (!self.toggleSquareConstrain) {
+        self.cropView.cropAspectRatio = 1.0f;
+        self.keepingCropAspectRatio = YES;
+    }
+    else {
+        self.keepingCropAspectRatio = NO;
+    }
+    self.toggleSquareConstrain = !self.toggleSquareConstrain;
 }
 
 - (void)constrain:(id)sender

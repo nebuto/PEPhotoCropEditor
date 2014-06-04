@@ -74,9 +74,9 @@ static const CGFloat MarginRight = MarginLeft;
     self.scrollView.clipsToBounds = NO;
     [self addSubview:self.scrollView];
     
-    UIRotationGestureRecognizer *rotationGestureRecognizer = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(handleRotation:)];
-    rotationGestureRecognizer.delegate = self;
-    [self.scrollView addGestureRecognizer:rotationGestureRecognizer];
+//    UIRotationGestureRecognizer *rotationGestureRecognizer = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(handleRotation:)];
+//    rotationGestureRecognizer.delegate = self;
+//    [self.scrollView addGestureRecognizer:rotationGestureRecognizer];
     
     self.cropRectView = [[PECropRectView alloc] init];
     self.cropRectView.delegate = self;
@@ -144,6 +144,8 @@ static const CGFloat MarginRight = MarginLeft;
         
         [self setupImageView];
     }
+    
+    self.cropRectView.editingRect = self.editingRect;
     
     if (!self.isResizing) {
         [self layoutCropRectViewWithCropRect:self.scrollView.frame];
@@ -413,9 +415,9 @@ static const CGFloat MarginRight = MarginLeft;
         CGRectGetMaxX(cropRect) > CGRectGetMaxX(self.editingRect) + 5.0f ||
         CGRectGetMinY(cropRect) < CGRectGetMinY(self.editingRect) - 5.0f ||
         CGRectGetMaxY(cropRect) > CGRectGetMaxY(self.editingRect) + 5.0f) {
-        [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-            [self zoomToCropRect:self.cropRectView.frame];
-        } completion:NULL];
+//        [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+//            [self zoomToCropRect:self.cropRectView.frame];
+//        } completion:NULL];
     }
 }
 
@@ -432,13 +434,13 @@ static const CGFloat MarginRight = MarginLeft;
     
     [self layoutCropRectViewWithCropRect:cropRect];
     
-    [self automaticZoomIfEdgeTouched:cropRect];
+//    [self automaticZoomIfEdgeTouched:cropRect];
 }
 
 - (void)cropRectViewDidEndEditing:(PECropRectView *)cropRectView
 {
     self.resizing = NO;
-    [self zoomToCropRect:self.cropRectView.frame];
+//    [self zoomToCropRect:self.cropRectView.frame];
 }
 
 - (void)zoomToCropRect:(CGRect)toRect andCenter:(BOOL)center
