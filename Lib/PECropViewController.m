@@ -67,15 +67,11 @@ static inline NSString *PELocalizedString(NSString *key, NSString *comment)
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                                                        target:nil
                                                                                        action:nil];
-        UIBarButtonItem *squareButton = [[UIBarButtonItem alloc] initWithTitle:PELocalizedString(@"Toggle square constrain", nil)
+        UIBarButtonItem *squareButton = [[UIBarButtonItem alloc] initWithTitle:PELocalizedString(@"Square constrain", nil)
                                                                             style:UIBarButtonItemStyleBordered
                                                                            target:self
                                                                            action:@selector(toggleSquare:)];
-        UIBarButtonItem *resetButton = [[UIBarButtonItem alloc] initWithTitle:@"Reset"
-                                                                        style:UIBarButtonItemStyleBordered
-                                                                       target:self
-                                                                       action:@selector(resetCropRectAnimated)];
-        self.toolbarItems = @[resetButton, flexibleSpace, squareButton];
+        self.toolbarItems = @[flexibleSpace, squareButton];
     }
     self.navigationController.toolbarHidden = self.toolbarHidden;
     
@@ -155,6 +151,7 @@ static inline NSString *PELocalizedString(NSString *key, NSString *comment)
 
 - (void)resetCropRectAnimated
 {
+    self.keepingCropAspectRatio = NO;
     [self resetCropRectAnimated:YES];
 }
 
@@ -186,7 +183,7 @@ static inline NSString *PELocalizedString(NSString *key, NSString *comment)
         self.keepingCropAspectRatio = YES;
     }
     else {
-        self.keepingCropAspectRatio = NO;
+        [self resetCropRectAnimated];
     }
     self.toggleSquareConstrain = !self.toggleSquareConstrain;
 }
