@@ -191,6 +191,9 @@ static inline NSString *PELocalizedString(NSString *key, NSString *comment)
     if ([self.delegate respondsToSelector:@selector(cropViewController:didFinishCroppingImage:)]) {
         [self.delegate cropViewController:self didFinishCroppingImage:self.cropView.croppedImage];
     }
+    if ([self.delegate respondsToSelector:@selector(cropViewController:didFinishCroppingImage:withFullImage:andCropRect:)]) {
+        [self.delegate cropViewController:self didFinishCroppingImage:self.cropView.croppedImage withFullImage:self.image andCropRect:self.cropView.zoomedCropRect];
+    }
 }
 
 - (void)toggleSquare:(id)sender
