@@ -15,6 +15,7 @@
 @property (nonatomic) UIActionSheet *actionSheet;
 @property (nonatomic) BOOL toggleSquareConstrain;
 
+@property (nonatomic) BOOL firstLaunch;
 @end
 
 @implementation PECropViewController
@@ -55,28 +56,29 @@ static inline NSString *PELocalizedString(NSString *key, NSString *comment)
     
     self.navigationController.navigationBar.translucent = NO;
     self.navigationController.toolbar.translucent = NO;
-
+    
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                           target:self
                                                                                           action:@selector(cancel:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                            target:self
                                                                                            action:@selector(done:)];
-
+    
     if (!self.toolbarItems) {
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                                                        target:nil
                                                                                        action:nil];
         UIBarButtonItem *squareButton = [[UIBarButtonItem alloc] initWithTitle:PELocalizedString(@"Square constrain", nil)
-                                                                            style:UIBarButtonItemStyleBordered
-                                                                           target:self
-                                                                           action:@selector(toggleSquare:)];
+                                                                         style:UIBarButtonItemStyleBordered
+                                                                        target:self
+                                                                        action:@selector(toggleSquare:)];
         self.toolbarItems = @[flexibleSpace, squareButton];
     }
     self.navigationController.toolbarHidden = self.toolbarHidden;
     
     self.cropView.image = self.image;
     self.toggleSquareConstrain = NO;
+    self.firstLaunch = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -87,6 +89,7 @@ static inline NSString *PELocalizedString(NSString *key, NSString *comment)
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    self.firstLaunch = NO;
     if (self.toolbarItems)
         [self.navigationController setToolbarHidden:YES animated:YES];
 }
@@ -95,17 +98,19 @@ static inline NSString *PELocalizedString(NSString *key, NSString *comment)
 {
     [super viewDidAppear:animated];
     
-//    if (self.cropAspectRatio != 0) {
-//        self.cropAspectRatio = self.cropAspectRatio;
-//    }
-//    if (!CGRectEqualToRect(self.cropRect, CGRectZero)) {
-//        self.cropRect = self.cropRect;
-//    }
-//    if (!CGRectEqualToRect(self.imageCropRect, CGRectZero)) {
-//        self.imageCropRect = self.imageCropRect;
-//    }
-//    
-//    self.keepingCropAspectRatio = self.keepingCropAspectRatio;
+    if (!self.firstLaunch) return;
+    
+    if (self.cropAspectRatio != 0) {
+        self.cropAspectRatio = self.cropAspectRatio;
+    }
+    if (!CGRectEqualToRect(self.cropRect, CGRectZero)) {
+        self.cropRect = self.cropRect;
+    }
+    if (!CGRectEqualToRect(self.imageCropRect, CGRectZero)) {
+        self.imageCropRect = self.imageCropRect;
+    }
+    
+    self.keepingCropAspectRatio = self.keepingCropAspectRatio;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
