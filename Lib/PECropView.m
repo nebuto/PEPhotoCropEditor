@@ -415,9 +415,9 @@ static const CGFloat MarginRight = MarginLeft;
         CGRectGetMaxX(cropRect) > CGRectGetMaxX(self.editingRect) + 5.0f ||
         CGRectGetMinY(cropRect) < CGRectGetMinY(self.editingRect) - 5.0f ||
         CGRectGetMaxY(cropRect) > CGRectGetMaxY(self.editingRect) + 5.0f) {
-//        [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-//            [self zoomToCropRect:self.cropRectView.frame];
-//        } completion:NULL];
+        [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+            [self zoomToCropRect:self.cropRectView.frame];
+        } completion:NULL];
     }
 }
 
@@ -433,14 +433,13 @@ static const CGFloat MarginRight = MarginLeft;
     CGRect cropRect = [self cappedCropRectInImageRectWithCropRectView:cropRectView];
     
     [self layoutCropRectViewWithCropRect:cropRect];
-    
 //    [self automaticZoomIfEdgeTouched:cropRect];
 }
 
 - (void)cropRectViewDidEndEditing:(PECropRectView *)cropRectView
 {
     self.resizing = NO;
-//    [self zoomToCropRect:self.cropRectView.frame];
+    [self zoomToCropRect:self.cropRectView.frame];
 }
 
 - (void)zoomToCropRect:(CGRect)toRect andCenter:(BOOL)center

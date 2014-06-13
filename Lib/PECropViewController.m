@@ -79,21 +79,33 @@ static inline NSString *PELocalizedString(NSString *key, NSString *comment)
     self.toggleSquareConstrain = NO;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if (self.toolbarItems)
+        [self.navigationController setToolbarHidden:NO animated:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    if (self.toolbarItems)
+        [self.navigationController setToolbarHidden:YES animated:YES];
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     
-    if (self.cropAspectRatio != 0) {
-        self.cropAspectRatio = self.cropAspectRatio;
-    }
-    if (!CGRectEqualToRect(self.cropRect, CGRectZero)) {
-        self.cropRect = self.cropRect;
-    }
-    if (!CGRectEqualToRect(self.imageCropRect, CGRectZero)) {
-        self.imageCropRect = self.imageCropRect;
-    }
-    
-    self.keepingCropAspectRatio = self.keepingCropAspectRatio;
+//    if (self.cropAspectRatio != 0) {
+//        self.cropAspectRatio = self.cropAspectRatio;
+//    }
+//    if (!CGRectEqualToRect(self.cropRect, CGRectZero)) {
+//        self.cropRect = self.cropRect;
+//    }
+//    if (!CGRectEqualToRect(self.imageCropRect, CGRectZero)) {
+//        self.imageCropRect = self.imageCropRect;
+//    }
+//    
+//    self.keepingCropAspectRatio = self.keepingCropAspectRatio;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
