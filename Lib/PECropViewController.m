@@ -68,11 +68,11 @@ static inline NSString *PELocalizedString(NSString *key, NSString *comment)
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                                                        target:nil
                                                                                        action:nil];
-        UIBarButtonItem *squareButton = [[UIBarButtonItem alloc] initWithTitle:PELocalizedString(@"Square constrain", nil)
+        UIBarButtonItem *reset = [[UIBarButtonItem alloc] initWithTitle:PELocalizedString(@"Reset", nil)
                                                                          style:UIBarButtonItemStyleBordered
                                                                         target:self
-                                                                        action:@selector(toggleSquare:)];
-        self.toolbarItems = @[flexibleSpace, squareButton];
+                                                                        action:@selector(resetCropRectAnimated)];
+        self.toolbarItems = @[reset, flexibleSpace];
     }
     self.navigationController.toolbarHidden = self.toolbarHidden;
     
