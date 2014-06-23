@@ -9,7 +9,7 @@
 #import "PECropViewController.h"
 #import "PECropView.h"
 
-@interface PECropViewController () <UIActionSheetDelegate>
+@interface PECropViewController () <UIActionSheetDelegate, PECropViewDelegate>
 
 @property (nonatomic) PECropView *cropView;
 @property (nonatomic) UIActionSheet *actionSheet;
@@ -47,6 +47,13 @@ static inline NSString *PELocalizedString(NSString *key, NSString *comment)
     self.view = contentView;
     
     self.cropView = [[PECropView alloc] initWithFrame:contentView.bounds];
+    self.cropView.delegate = self;
+    if (self.minimumImageCropRectSize.width > 0) {
+        self.cropView.minimumImageCropRectSize = self.minimumImageCropRectSize;
+    }
+    else {
+        self.cropView.minimumImageCropRectSize = CGSizeMake(0, 0);
+    }
     [contentView addSubview:self.cropView];
 }
 
@@ -269,6 +276,14 @@ static inline NSString *PELocalizedString(NSString *key, NSString *comment)
         CGFloat width = CGRectGetWidth(cropRect);
         cropRect.size = CGSizeMake(width, width * ratio);
         self.cropView.cropRect = cropRect;
+    }
+}
+
+#pragma mark - PECropViewDelegate
+
+- (void)cropViewDidHitMinimumCappedSize {
+    if ([self.delegate respondsToSelector:@selector(cropViewDidHitMinimumCappedSize)]) {
+        [self.delegate cropViewDidHitMinimumCappedSize];
     }
 }
 

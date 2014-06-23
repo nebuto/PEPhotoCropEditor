@@ -293,7 +293,7 @@
     
 	CGFloat minWidth = CGRectGetWidth(self.leftEdgeView.bounds) + CGRectGetWidth(self.rightEdgeView.bounds);
 	CGFloat minHeight = CGRectGetHeight(self.topEdgeView.bounds) + CGRectGetHeight(self.bottomEdgeView.bounds);
-	
+    
     if (self.fixedAspectRatio) {
 		// Compute a minSize for the crop rectangle, then adjust minWidth and minHeight based on the original aspect ratio and the minSize
 		CGFloat minSize = CGRectGetWidth(self.leftEdgeView.bounds) + CGRectGetWidth(self.rightEdgeView.bounds);
@@ -328,8 +328,21 @@
     if (CGRectGetMinX(rect) < CGRectGetMinX(self.editingRect) - 15.0f ||
         CGRectGetMaxX(rect) > CGRectGetMaxX(self.editingRect) + 15.0f ||
         CGRectGetMinY(rect) < CGRectGetMinY(self.editingRect) - 30.0f ||
-        CGRectGetMaxY(rect) > CGRectGetMaxY(self.editingRect) + 30.0f) {
+        CGRectGetMaxY(rect) > CGRectGetMaxY(self.editingRect) + 30.0f ) {
         rect = self.frame;
+    }
+
+    if ([self.delegate respondsToSelector:@selector(cropRectCanResizeToRect:)]) {
+        NSDictionary* canResize = [self.delegate cropRectCanResizeToRect:rect];
+        
+        if (![[canResize objectForKey:@"width"] boolValue]) {
+            rect.origin.x = self.frame.origin.x;
+            rect.size.width = self.frame.size.width;
+        }
+        if (![[canResize objectForKey:@"height"] boolValue]) {
+            rect.origin.y = self.frame.origin.y;
+            rect.size.height = self.frame.size.height;
+        }
     }
 
     return rect;

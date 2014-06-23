@@ -28,5 +28,7 @@
 - (void)cropRectViewEditingChanged:(PECropRectView *)cropRectView;
 - (void)cropRectViewDidEndEditing:(PECropRectView *)cropRectView;
 
+- (NSDictionary*)cropRectCanResizeToRect:(CGRect)rect;
+
 @end
 

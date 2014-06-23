@@ -66,7 +66,7 @@ static const CGFloat MarginRight = MarginLeft;
     self.scrollView.delegate = self;
     self.scrollView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
     self.scrollView.backgroundColor = [UIColor clearColor];
-    self.scrollView.maximumZoomScale = 20.0f;
+    self.scrollView.maximumZoomScale = 10.0f;
     self.scrollView.showsHorizontalScrollIndicator = NO;
     self.scrollView.showsVerticalScrollIndicator = NO;
     self.scrollView.bounces = NO;
@@ -345,6 +345,27 @@ static const CGFloat MarginRight = MarginLeft;
     return zoomedCropRect;
 }
 
+- (CGRect)zoomedCropRectFromRect:(CGRect)rect
+{
+    CGRect cropRect = [self convertRect:rect toView:self.zoomingView];
+    CGSize size = self.image.size;
+    
+    CGFloat ratio = 1.0f;
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad || UIInterfaceOrientationIsPortrait(orientation)) {
+        ratio = CGRectGetWidth(AVMakeRectWithAspectRatioInsideRect(self.image.size, self.insetRect)) / size.width;
+    } else {
+        ratio = CGRectGetHeight(AVMakeRectWithAspectRatioInsideRect(self.image.size, self.insetRect)) / size.height;
+    }
+    
+    CGRect zoomedCropRect = CGRectMake(cropRect.origin.x / ratio,
+                                       cropRect.origin.y / ratio,
+                                       cropRect.size.width / ratio,
+                                       cropRect.size.height / ratio);
+    
+    return zoomedCropRect;
+}
+
 - (BOOL)userHasModifiedCropArea
 {
     CGRect zoomedCropRect = CGRectIntegral(self.zoomedCropRect);
@@ -381,7 +402,7 @@ static const CGFloat MarginRight = MarginLeft;
 - (CGRect)cappedCropRectInImageRectWithCropRectView:(PECropRectView *)cropRectView
 {
     CGRect cropRect = cropRectView.frame;
-    
+
     CGRect rect = [self convertRect:cropRect toView:self.scrollView];
     if (CGRectGetMinX(rect) < CGRectGetMinX(self.zoomingView.frame)) {
         cropRect.origin.x = CGRectGetMinX([self.scrollView convertRect:self.zoomingView.frame toView:self]);
@@ -407,6 +428,21 @@ static const CGFloat MarginRight = MarginLeft;
     }
     
     return cropRect;
+}
+
+- (NSDictionary *)cropRectCanResizeToRect:(CGRect)rect {
+    CGRect zoomedRect = [self zoomedCropRectFromRect:rect];
+    BOOL canResizeHeight = YES;
+    BOOL canResizeWidth = YES;
+
+    if (zoomedRect.size.width <= self.minimumImageCropRectSize.width) {
+        canResizeWidth = NO;
+    }
+    if (zoomedRect.size.height <= self.minimumImageCropRectSize.height) {
+        canResizeHeight = NO;
+    }
+
+    return @{@"width": @(canResizeWidth), @"height": @(canResizeHeight)};
 }
 
 - (void)automaticZoomIfEdgeTouched:(CGRect)cropRect
@@ -510,6 +546,21 @@ static const CGFloat MarginRight = MarginLeft;
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
 {
     return self.zoomingView;
+}
+
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale {
+    NSDictionary* canResize = [self cropRectCanResizeToRect:self.cropRectView.frame];
+    CGRect biggerRect;
+    if (![[canResize objectForKey:@"width"] boolValue] || ![[canResize objectForKey:@"height"] boolValue]) {
+        for (int pixel = 0; pixel < 400; pixel++) {
+            biggerRect = CGRectInset(self.cropRectView.frame, -pixel, -pixel);
+            NSDictionary* canResize = [self cropRectCanResizeToRect:biggerRect];
+            if ([[canResize objectForKey:@"width"] boolValue] && [[canResize objectForKey:@"height"] boolValue]) break;
+        }
+        
+        [self zoomToCropRect:biggerRect andCenter:NO];
+//        [self.delegate cropViewDidHitMinimumCappedSize];
+    }
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset

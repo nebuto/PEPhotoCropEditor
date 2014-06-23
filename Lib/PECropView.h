@@ -10,8 +10,11 @@
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
 
+@protocol PECropViewDelegate;
+
 @interface PECropView : UIView
 
+@property (nonatomic, weak) id<PECropViewDelegate> delegate;
 @property (nonatomic) UIImage *image;
 @property (nonatomic, readonly) UIImage *croppedImage;
 @property (nonatomic, readonly) CGRect zoomedCropRect;
@@ -23,6 +26,7 @@
 
 @property (nonatomic) CGRect cropRect;
 @property (nonatomic) CGRect imageCropRect;
+@property (nonatomic) CGSize minimumImageCropRectSize;
 
 @property (nonatomic) CGFloat rotationAngle;
 
@@ -30,5 +34,11 @@
 - (void)resetCropRectAnimated:(BOOL)animated;
 
 - (void)setRotationAngle:(CGFloat)rotationAngle snap:(BOOL)snap;
+
+@end
+
+@protocol PECropViewDelegate <NSObject>
+
+- (void)cropViewDidHitMinimumCappedSize;
 
 @end
