@@ -564,10 +564,11 @@ static const CGFloat MarginLeft = 20.0f;
             biggerRect = CGRectInset(self.cropRectView.frame, -pixel, -pixel);
             NSDictionary* canResize = [self cropRectCanResizeToRect:biggerRect];
             if ([[canResize objectForKey:@"width"] boolValue] && [[canResize objectForKey:@"height"] boolValue]) {
-                [self zoomToCropRect:biggerRect andCenter:NO];
                 break;
             }
         }
+        
+        [self zoomToCropRect:biggerRect andCenter:NO];
         if ([self.delegate respondsToSelector:@selector(cropViewDidHitMinimumCappedSize)]) {
             [self.delegate cropViewDidHitMinimumCappedSize];
         }
