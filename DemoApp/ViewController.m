@@ -59,6 +59,10 @@
     [controller dismissViewControllerAnimated:YES completion:NULL];
 }
 
+- (void)cropViewDidHitMinimumCappedSize {
+    
+}
+
 #pragma mark - Action methods
 
 - (IBAction)openEditor:(id)sender

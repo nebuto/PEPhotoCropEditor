@@ -433,10 +433,10 @@ static const CGFloat MarginLeft = 20.0f;
     BOOL canResizeHeight = YES;
     BOOL canResizeWidth = YES;
 
-    if (zoomedRect.size.width <= self.minimumImageCropRectSize.width) {
+    if (zoomedRect.size.width < self.minimumImageCropRectSize.width) {
         canResizeWidth = NO;
     }
-    if (zoomedRect.size.height <= self.minimumImageCropRectSize.height) {
+    if (zoomedRect.size.height < self.minimumImageCropRectSize.height) {
         canResizeHeight = NO;
     }
 
@@ -474,6 +474,16 @@ static const CGFloat MarginLeft = 20.0f;
 {
     self.resizing = NO;
     [self zoomToCropRect:self.cropRectView.frame];
+    
+    CGRect cropRectFrame = self.cropRectView.frame;
+    cropRectFrame.size.width -= 10;
+    cropRectFrame.size.height -= 10;
+    NSDictionary *canResize = [self cropRectCanResizeToRect:cropRectFrame];
+    if (![[canResize objectForKey:@"width"] boolValue] && ![[canResize objectForKey:@"height"] boolValue]) {
+        if ([self.delegate respondsToSelector:@selector(cropViewDidHitMinimumCappedSize)]) {
+            [self.delegate cropViewDidHitMinimumCappedSize];
+        }
+    }
 }
 
 - (void)zoomToCropRect:(CGRect)toRect andCenter:(BOOL)center
@@ -553,11 +563,14 @@ static const CGFloat MarginLeft = 20.0f;
         for (int pixel = 0; pixel < 400; pixel++) {
             biggerRect = CGRectInset(self.cropRectView.frame, -pixel, -pixel);
             NSDictionary* canResize = [self cropRectCanResizeToRect:biggerRect];
-            if ([[canResize objectForKey:@"width"] boolValue] && [[canResize objectForKey:@"height"] boolValue]) break;
+            if ([[canResize objectForKey:@"width"] boolValue] && [[canResize objectForKey:@"height"] boolValue]) {
+                [self zoomToCropRect:biggerRect andCenter:NO];
+                break;
+            }
         }
-        
-        [self zoomToCropRect:biggerRect andCenter:NO];
-//        [self.delegate cropViewDidHitMinimumCappedSize];
+        if ([self.delegate respondsToSelector:@selector(cropViewDidHitMinimumCappedSize)]) {
+            [self.delegate cropViewDidHitMinimumCappedSize];
+        }
     }
 }
 
